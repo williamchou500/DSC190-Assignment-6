@@ -3,7 +3,7 @@ from datetime import date, timedelta
 
 
 def test_date():
-    assert nldate.parse("2025-12-04") == date.today()
+    assert nldate.parse("2025-12-04") == date(2025, 12, 4)
 
 
 def test_today():

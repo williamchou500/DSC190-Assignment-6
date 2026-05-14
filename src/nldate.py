@@ -2,6 +2,7 @@ from datetime import date, timedelta, datetime
 from dateutil.relativedelta import relativedelta
 import re
 
+
 def try_parse_date(s: str) -> date | None:
     formats = (
         "%Y-%m-%d",
@@ -30,10 +31,7 @@ def parse(s: str, today: date | None = None) -> date:
     if parsed is not None:
         return parsed
 
-    match = re.search(
-        r"([A-Za-z]+ \d{1,2}, \d{4})",
-        raw
-    )
+    match = re.search(r"([A-Za-z]+ \d{1,2}, \d{4})", raw)
 
     embedded_patterns = [
         r"\d{4}-\d{2}-\d{2}",

@@ -26,6 +26,10 @@ def test_date_string_short():
     assert nldate.parse("Dec 2nd, 2025") == date(2025, 12, 2)
 
 
+def test_date_string_period():
+    assert nldate.parse("Dec. 2nd, 2025") == date(2025, 12, 2)
+
+
 def test_today():
     assert nldate.parse("Today") == date.today()
 

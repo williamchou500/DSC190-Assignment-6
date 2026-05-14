@@ -78,16 +78,20 @@ def parse(s: str, today: date | None = None) -> date:
             return ref + relativedelta(years=value)
 
     days = weeks = months = years = 0
-    direction = None  # "after" or "before"
+    direction = None
+
+    direction = None
+
+    if "ago" in tokens or "before" in tokens:
+        direction = "before"
+    elif "after" in tokens or ("in" in tokens):
+        direction = "after"
 
     i = 0
     while i < len(tokens):
         t = tokens[i]
 
-        if t in ("after", "before"):
-            direction = t
-
-        elif t.isdigit() and i + 1 < len(tokens):
+        if t.isdigit() and i + 1 < len(tokens):
             unit = tokens[i + 1]
 
             if unit.startswith("day"):

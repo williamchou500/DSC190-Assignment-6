@@ -34,6 +34,10 @@ def test_date_string_in_5_days():
     assert nldate.parse("in 5 days") == date(2026, 5, 18)
 
 
+def test_date_string_days_ago():
+    assert nldate.parse("5 days ago") == date(2026, 5, 8)
+
+
 def test_today():
     assert nldate.parse("Today") == date.today()
 

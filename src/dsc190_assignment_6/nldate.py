@@ -1,107 +1,124 @@
 from datetime import date, timedelta, datetime
 from dateutil.relativedelta import relativedelta
-import numpy as np
-
-weekdays = {
-    "monday": 0,
-    "tuesday": 1,
-    "wednesday": 2,
-    "thursday": 3,
-    "friday": 4,
-    "saturday": 5,
-    "sunday": 6,
-}
 
 
 def parse(s: str, today: date | None = None) -> date:
+    ref = today or date.today()
+    raw = s.strip()
+
+    # ----------------------------
+    # 1. ISO date (highest priority)
+    # ----------------------------
     try:
-        return datetime.strptime(s, "%Y-%m-%d").date()
+        return datetime.strptime(raw, "%Y-%m-%d").date()
     except ValueError:
         pass
 
-    if today is None:
-        ref_date = date.today()
-    else:
-        ref_date = today
+    s = raw.lower()
 
-    if s.lower() == "today":
-        return ref_date
+    # ----------------------------
+    # 2. simple cases
+    # ----------------------------
+    if s == "today":
+        return ref
+    if s == "tomorrow":
+        return ref + timedelta(days=1)
+    if s == "yesterday":
+        return ref - timedelta(days=1)
 
-    if s.lower() == "tomorrow":
-        return ref_date + timedelta(days=1)
+    # ----------------------------
+    # 3. base shift handling
+    # ----------------------------
+    base = ref
 
-    if s.lower() == "yesterday":
-        return ref_date - timedelta(days=1)
+    if "tomorrow" in s.split():
+        base = ref + timedelta(days=1)
+    elif "yesterday" in s.split():
+        base = ref - timedelta(days=1)
 
-    days_to_shift = 0
-    weeks_to_shift = 0
-    months_to_shift = 0
-    years_to_shift = 0
+    # ----------------------------
+    # 4. token parsing
+    # ----------------------------
+    tokens = s.replace(",", "").split()
 
-    split_str = np.array(s.replace(",", "").lower().split())
+    days = weeks = months = years = 0
+    direction = None  # "after" or "before"
 
-    increase_from_ref = False
-    decrease_from_ref = False
+    i = 0
+    while i < len(tokens):
+        t = tokens[i]
 
-    for i in range(len(split_str)):
-        curr_word = split_str[i]
+        if t in ("after", "before"):
+            direction = t
 
-        if i != len(split_str) - 1:
-            next_word = split_str[i + 1]
+        elif t.isdigit() and i + 1 < len(tokens):
+            unit = tokens[i + 1]
 
-        if curr_word.isdigit():
-            if next_word == "day" or next_word == "days":
-                days_to_shift += int(curr_word)
+            if unit.startswith("day"):
+                days += int(t)
+            elif unit.startswith("week"):
+                weeks += int(t)
+            elif unit.startswith("month"):
+                months += int(t)
+            elif unit.startswith("year"):
+                years += int(t)
 
-            elif next_word == "week" or next_word == "weeks":
-                weeks_to_shift += int(curr_word)
+        elif t == "next" and i + 1 < len(tokens):
+            wd = tokens[i + 1]
+            if wd in {
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday",
+            }:
+                weekday_map = {
+                    "monday": 0,
+                    "tuesday": 1,
+                    "wednesday": 2,
+                    "thursday": 3,
+                    "friday": 4,
+                    "saturday": 5,
+                    "sunday": 6,
+                }
+                target = weekday_map[wd]
+                return base + timedelta(days=(7 + target - base.weekday()) % 7)
 
-            elif next_word == "month" or next_word == "months":
-                months_to_shift += int(curr_word)
+        elif t == "last" and i + 1 < len(tokens):
+            wd = tokens[i + 1]
+            if wd in {
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday",
+            }:
+                weekday_map = {
+                    "monday": 0,
+                    "tuesday": 1,
+                    "wednesday": 2,
+                    "thursday": 3,
+                    "friday": 4,
+                    "saturday": 5,
+                    "sunday": 6,
+                }
+                target = weekday_map[wd]
+                return base - timedelta(days=(7 - target + base.weekday()) % 7)
 
-            elif next_word == "year" or next_word == "years":
-                years_to_shift += int(curr_word)
+        i += 1
 
-        if curr_word == "after":
-            increase_from_ref = True
+    # ----------------------------
+    # 5. apply accumulated shift
+    # ----------------------------
+    delta = timedelta(days=days, weeks=weeks)
 
-            if next_word == "tomorrow":
-                ref_date += timedelta(days=1)
+    if direction == "after":
+        return base + delta + relativedelta(months=months, years=years)
+    elif direction == "before":
+        return base - delta - relativedelta(months=months, years=years)
 
-        if curr_word == "before":
-            decrease_from_ref = True
-
-            if next_word == "tomorrow":
-                ref_date += timedelta(days=1)
-
-        if curr_word == "next":
-            if next_word in weekdays.keys():
-                return ref_date + timedelta(
-                    days=7 + weekdays[next_word] - ref_date.weekday()
-                )
-
-        if curr_word == "last":
-            if next_word in weekdays.keys():
-                return ref_date - timedelta(
-                    days=7 - weekdays[next_word] + ref_date.weekday()
-                )
-
-    if increase_from_ref:
-        return (
-            ref_date
-            + timedelta(days=days_to_shift)
-            + timedelta(weeks=weeks_to_shift)
-            + relativedelta(months=months_to_shift)
-            + relativedelta(years=years_to_shift)
-        )
-
-    if decrease_from_ref:
-        return (
-            ref_date
-            - timedelta(days=days_to_shift)
-            - timedelta(weeks=weeks_to_shift)
-            - relativedelta(months=months_to_shift)
-            - relativedelta(years=years_to_shift)
-        )
-
-    return ref_date
+    return base

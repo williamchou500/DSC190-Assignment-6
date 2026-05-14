@@ -15,7 +15,7 @@ def test_date_string():
 
 
 def test_date_string_st():
-    assert nldate.parse("December 1st, 2025") == date(2025, 12, 1)
+    assert nldate.parse("5 days before December 1st, 2025") == date(2025, 11, 26)
 
 
 def test_date_string_nd():

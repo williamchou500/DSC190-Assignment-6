@@ -21,6 +21,9 @@ def try_parse_date(s: str) -> date | None:
 
 
 def parse(s: str, today: date | None = None) -> date:
+    if s == '':
+        raise ValueError()
+
     ref = today or date.today()
     raw = s.replace(".", "").strip()
 

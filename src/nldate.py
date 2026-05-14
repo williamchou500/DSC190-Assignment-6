@@ -70,19 +70,19 @@ def parse(s: str, today: date | None = None) -> date:
 
     s = s.strip().lower()
 
-    # ----------------------------
-    # 2. simple cases
-    # ----------------------------
     if s == "today":
         return ref
     if s == "tomorrow":
         return ref + timedelta(days=1)
     if s == "yesterday":
         return ref - timedelta(days=1)
+    if "day after tomorrow" in s:
+        ref = today or date.today()
+        return ref + timedelta(days=2)
+    if "the day after tomorrow" in s:
+        ref = today or date.today()
+        return ref + timedelta(days=2)
 
-    # ----------------------------
-    # 3. base shift handling
-    # ----------------------------
     base = embedded_date or today or date.today()
 
     if "tomorrow" in s.split():
@@ -90,14 +90,8 @@ def parse(s: str, today: date | None = None) -> date:
     elif "yesterday" in s.split():
         base = ref - timedelta(days=1)
 
-    # ----------------------------
-    # 4. token parsing
-    # ----------------------------
     tokens = s.replace(",", "").lower().split()
 
-    # ----------------------------
-    # handle "in X days" pattern
-    # ----------------------------
     if tokens[0] == "in":
         value = int(tokens[1])
         unit = tokens[2]
@@ -201,9 +195,6 @@ def parse(s: str, today: date | None = None) -> date:
 
         i += 1
 
-    # ----------------------------
-    # 5. apply accumulated shift
-    # ----------------------------
     delta = timedelta(days=days, weeks=weeks)
 
     if direction == "after":

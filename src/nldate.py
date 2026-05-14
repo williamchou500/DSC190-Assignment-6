@@ -215,6 +215,6 @@ def parse(s: str, today: date | None = None) -> date:
     ]
 
     if not any(re.search(p, s.lower()) for p in valid_patterns):
-        raise ValueError("Unrecognized date expression")
+        raise ValueError()
 
     return base

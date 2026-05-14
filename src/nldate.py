@@ -14,6 +14,11 @@ def parse(s: str, today: date | None = None) -> date:
     except ValueError:
         pass
 
+    try:
+        return datetime.strptime(s.strip(), "%Y/%m/%d").date()
+    except ValueError:
+        pass
+
     s = raw.lower()
 
     # ----------------------------

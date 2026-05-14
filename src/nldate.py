@@ -10,6 +10,7 @@ def parse(s: str, today: date | None = None) -> date:
         .replace("nd", "")
         .replace("rd", "")
         .replace("th", "")
+        .replace(".", "")
         .strip()
     )
 

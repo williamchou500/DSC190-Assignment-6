@@ -99,7 +99,9 @@ def parse(s: str, today: date | None = None) -> date:
 
     if "ago" in tokens or "before" in tokens:
         direction = "before"
-    elif "after" in tokens or ("in" in tokens):
+    elif (
+        "after" in tokens or ("in" in tokens) or ("from" in tokens and "now" in tokens)
+    ):
         direction = "after"
 
     i = 0

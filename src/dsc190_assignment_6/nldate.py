@@ -14,6 +14,9 @@ weekdays = {
 
 
 def parse(s: str, today: date | None = None) -> date:
+    print(s)
+    print(today)
+
     try:
         return datetime.strptime(s, "%Y-%m-%d").date()
     except ValueError:

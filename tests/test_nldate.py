@@ -2,6 +2,10 @@ import nldate
 from datetime import date, timedelta
 
 
+def test_date():
+    assert nldate.parse("2025-12-04") == date.today()
+
+
 def test_today():
     assert nldate.parse("Today") == date.today()
 

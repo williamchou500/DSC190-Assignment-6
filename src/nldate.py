@@ -4,7 +4,14 @@ from dateutil.relativedelta import relativedelta
 
 def parse(s: str, today: date | None = None) -> date:
     ref = today or date.today()
-    raw = s.strip()
+    raw = (
+        s.lower()
+        .replace("st", "")
+        .replace("nd", "")
+        .replace("rd", "")
+        .replace("th", "")
+        .strip()
+    )
 
     try:
         return datetime.strptime(raw, "%Y-%m-%d").date()
@@ -21,7 +28,7 @@ def parse(s: str, today: date | None = None) -> date:
     except ValueError:
         pass
 
-    s = raw.lower()
+    s = s.strip().lower()
 
     # ----------------------------
     # 2. simple cases

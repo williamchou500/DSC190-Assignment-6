@@ -34,6 +34,21 @@ def parse(s: str, today: date | None = None) -> date:
     except ValueError:
         pass
 
+    number_words = {
+        "a": 1,
+        "an": 1,
+        "one": 1,
+        "two": 2,
+        "three": 3,
+        "four": 4,
+        "five": 5,
+        "six": 6,
+        "seven": 7,
+        "eight": 8,
+        "nine": 9,
+        "ten": 10,
+    }
+
     s = s.strip().lower()
 
     # ----------------------------
@@ -102,6 +117,20 @@ def parse(s: str, today: date | None = None) -> date:
                 months += int(t)
             elif unit.startswith("year"):
                 years += int(t)
+
+        elif t in number_words and i + 1 < len(tokens):
+            unit = tokens[i + 1]
+
+            unit_increase = number_words[t]
+
+            if unit.startswith("day"):
+                days += int(unit_increase)
+            elif unit.startswith("week"):
+                weeks += int(unit_increase)
+            elif unit.startswith("month"):
+                months += int(unit_increase)
+            elif unit.startswith("year"):
+                years += int(unit_increase)
 
         elif t == "next" and i + 1 < len(tokens):
             wd = tokens[i + 1]

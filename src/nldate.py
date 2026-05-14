@@ -208,4 +208,13 @@ def parse(s: str, today: date | None = None) -> date:
     elif direction == "before":
         return base - delta - relativedelta(months=months, years=years)
 
+    valid_patterns = [
+        r"\d",
+        r"today|tomorrow|yesterday",
+        r"ago|before|after|in|from|next|last",
+    ]
+
+    if not any(re.search(p, s.lower()) for p in valid_patterns):
+        raise ValueError()
+
     return base

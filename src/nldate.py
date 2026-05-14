@@ -6,9 +6,6 @@ def parse(s: str, today: date | None = None) -> date:
     ref = today or date.today()
     raw = s.strip()
 
-    # ----------------------------
-    # 1. ISO date (highest priority)
-    # ----------------------------
     try:
         return datetime.strptime(raw, "%Y-%m-%d").date()
     except ValueError:
@@ -16,6 +13,11 @@ def parse(s: str, today: date | None = None) -> date:
 
     try:
         return datetime.strptime(s.strip(), "%Y/%m/%d").date()
+    except ValueError:
+        pass
+
+    try:
+        return datetime.strptime(raw, "%B %d, %Y").date()
     except ValueError:
         pass
 

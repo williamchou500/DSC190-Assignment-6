@@ -10,6 +10,10 @@ def test_date_slash():
     assert nldate.parse("2025/12/04") == date(2025, 12, 4)
 
 
+def test_date_string():
+    assert nldate.parse("December 1, 2025") == date(2025, 12, 1)
+
+
 def test_today():
     assert nldate.parse("Today") == date.today()
 

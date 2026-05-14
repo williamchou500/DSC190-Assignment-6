@@ -1,4 +1,4 @@
-from datetime import date, timedelta, strptime
+from datetime import date, timedelta, datetime
 from dateutil.relativedelta import relativedelta
 import numpy as np
 
@@ -15,7 +15,7 @@ weekdays = {
 
 def parse(s: str, today: date | None = None) -> date:
     try:
-        return strptime(s, "%Y-%m-%d").date()
+        return datetime.strptime(s, "%Y-%m-%d").date()
     except ValueError:
         pass
 

@@ -1,4 +1,4 @@
-from dsc190_assignment_6 import nldate
+import nldate
 from datetime import date, timedelta
 
 def test_today():

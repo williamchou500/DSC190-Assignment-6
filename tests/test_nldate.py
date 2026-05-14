@@ -14,6 +14,14 @@ def test_date_string():
     assert nldate.parse("December 1, 2025") == date(2025, 12, 1)
 
 
+def test_date_string_st():
+    assert nldate.parse("December 1st, 2025") == date(2025, 12, 1)
+
+
+def test_date_string_nd():
+    assert nldate.parse("December 2nd, 2025") == date(2025, 12, 2)
+
+
 def test_today():
     assert nldate.parse("Today") == date.today()
 

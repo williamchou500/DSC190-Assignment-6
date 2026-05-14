@@ -1,18 +1,13 @@
 from datetime import date, timedelta, datetime
 from dateutil.relativedelta import relativedelta
+import re
 
 
 def parse(s: str, today: date | None = None) -> date:
     ref = today or date.today()
-    raw = (
-        s.lower()
-        .replace("st", "")
-        .replace("nd", "")
-        .replace("rd", "")
-        .replace("th", "")
-        .replace(".", "")
-        .strip()
-    )
+    raw = s.replace(".", "").strip()
+
+    raw = re.sub(r"(\d+)(st|nd|rd|th)", r"\1", raw)
 
     try:
         return datetime.strptime(raw, "%Y-%m-%d").date()
@@ -33,6 +28,21 @@ def parse(s: str, today: date | None = None) -> date:
         return datetime.strptime(raw, "%b %d, %Y").date()
     except ValueError:
         pass
+
+    match = re.search(
+        r"([A-Za-z]+ \d{1,2}, \d{4})",
+        raw
+    )
+
+    if match:
+        date_str = match.group(1)
+
+        for fmt in ("%B %d, %Y", "%b %d, %Y"):
+            try:
+                ref = datetime.strptime(date_str, fmt).date()
+                break
+            except ValueError:
+                pass
 
     number_words = {
         "a": 1,

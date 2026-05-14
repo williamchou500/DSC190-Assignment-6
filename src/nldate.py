@@ -83,28 +83,28 @@ def parse(s: str, today: date | None = None) -> date:
         ref = today or date.today()
         return ref + timedelta(days=2)
 
-    base = embedded_date or today or date.today()
-
-    if "tomorrow" in s.split():
-        base = ref + timedelta(days=1)
-    elif "yesterday" in s.split():
-        base = ref - timedelta(days=1)
+    base = embedded_date or ref
 
     tokens = s.replace(",", "").lower().split()
+
+    if "tomorrow" in tokens:
+        base = base + timedelta(days=1)
+
+    if "yesterday" in tokens:
+        base = base - timedelta(days=1)
 
     if tokens[0] == "in":
         value = int(tokens[1])
         unit = tokens[2]
 
         if unit.startswith("day"):
-            return ref + timedelta(days=value)
+            return base + timedelta(days=value)
         if unit.startswith("week"):
-            return ref + timedelta(weeks=value)
+            return base + timedelta(weeks=value)
         if unit.startswith("month"):
-            return ref + relativedelta(months=value)
+            return base + relativedelta(months=value)
         if unit.startswith("year"):
-            return ref + relativedelta(years=value)
-
+            return base + relativedelta(years=value)
     days = weeks = months = years = 0
     direction = None
 

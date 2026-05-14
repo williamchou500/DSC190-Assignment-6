@@ -65,20 +65,46 @@ def parse(s: str, today: date | None = None) -> date:
 
         elif t == "next" and i + 1 < len(tokens):
             wd = tokens[i + 1]
-            if wd in {"monday","tuesday","wednesday","thursday","friday","saturday","sunday"}:
+            if wd in {
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday",
+            }:
                 weekday_map = {
-                    "monday": 0, "tuesday": 1, "wednesday": 2,
-                    "thursday": 3, "friday": 4, "saturday": 5, "sunday": 6
+                    "monday": 0,
+                    "tuesday": 1,
+                    "wednesday": 2,
+                    "thursday": 3,
+                    "friday": 4,
+                    "saturday": 5,
+                    "sunday": 6,
                 }
                 target = weekday_map[wd]
                 return base + timedelta(days=(7 + target - base.weekday()) % 7)
 
         elif t == "last" and i + 1 < len(tokens):
             wd = tokens[i + 1]
-            if wd in {"monday","tuesday","wednesday","thursday","friday","saturday","sunday"}:
+            if wd in {
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday",
+            }:
                 weekday_map = {
-                    "monday": 0, "tuesday": 1, "wednesday": 2,
-                    "thursday": 3, "friday": 4, "saturday": 5, "sunday": 6
+                    "monday": 0,
+                    "tuesday": 1,
+                    "wednesday": 2,
+                    "thursday": 3,
+                    "friday": 4,
+                    "saturday": 5,
+                    "sunday": 6,
                 }
                 target = weekday_map[wd]
                 return base - timedelta(days=(7 - target + base.weekday()) % 7)

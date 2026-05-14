@@ -7,7 +7,7 @@ def test_date():
 
 
 def test_date_slash():
-    assert nldate.parse("2025/12/04") == date(2025, 12, 4)
+    assert nldate.parse("2 weeks after 2025/12/04") == date(2025, 12, 18)
 
 
 def test_date_string():

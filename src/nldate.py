@@ -3,46 +3,55 @@ from dateutil.relativedelta import relativedelta
 import re
 
 
+def try_parse_date(s: str) -> date | None:
+    formats = (
+        "%Y-%m-%d",
+        "%Y/%m/%d",
+        "%B %d, %Y",
+        "%b %d, %Y",
+    )
+
+    for fmt in formats:
+        try:
+            return datetime.strptime(s, fmt).date()
+        except ValueError:
+            pass
+
+    return None
+
+
 def parse(s: str, today: date | None = None) -> date:
     ref = today or date.today()
     raw = s.replace(".", "").strip()
 
     raw = re.sub(r"(\d+)(st|nd|rd|th)", r"\1", raw)
 
-    try:
-        return datetime.strptime(raw, "%Y-%m-%d").date()
-    except ValueError:
-        pass
+    parsed = try_parse_date(raw)
 
-    try:
-        return datetime.strptime(s.strip(), "%Y/%m/%d").date()
-    except ValueError:
-        pass
+    if parsed is not None:
+        return parsed
 
-    try:
-        return datetime.strptime(raw, "%B %d, %Y").date()
-    except ValueError:
-        pass
+    match = re.search(r"([A-Za-z]+ \d{1,2}, \d{4})", raw)
 
-    try:
-        return datetime.strptime(raw, "%b %d, %Y").date()
-    except ValueError:
-        pass
+    embedded_patterns = [
+        r"\d{4}-\d{2}-\d{2}",
+        r"\d{4}/\d{2}/\d{2}",
+        r"[A-Za-z]+ \d{1,2}, \d{4}",
+    ]
 
-    match = re.search(
-        r"([A-Za-z]+ \d{1,2}, \d{4})",
-        raw
-    )
+    embedded_date = None
 
-    if match:
-        date_str = match.group(1)
+    for pattern in embedded_patterns:
+        match = re.search(pattern, raw)
 
-        for fmt in ("%B %d, %Y", "%b %d, %Y"):
-            try:
-                ref = datetime.strptime(date_str, fmt).date()
+        if match:
+            date_str = match.group(0)
+
+            parsed = try_parse_date(date_str)
+
+            if parsed is not None:
+                embedded_date = parsed
                 break
-            except ValueError:
-                pass
 
     number_words = {
         "a": 1,
@@ -74,7 +83,7 @@ def parse(s: str, today: date | None = None) -> date:
     # ----------------------------
     # 3. base shift handling
     # ----------------------------
-    base = ref
+    base = embedded_date or today or date.today()
 
     if "tomorrow" in s.split():
         base = ref + timedelta(days=1)

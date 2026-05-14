@@ -38,6 +38,10 @@ def test_date_string_days_ago():
     assert nldate.parse("5 days ago") == date(2026, 5, 8)
 
 
+def test_date_string_a_week_ago():
+    assert nldate.parse("a week ago") == date(2026, 5, 6)
+
+
 def test_today():
     assert nldate.parse("Today") == date.today()
 

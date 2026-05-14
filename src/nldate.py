@@ -59,7 +59,23 @@ def parse(s: str, today: date | None = None) -> date:
     # ----------------------------
     # 4. token parsing
     # ----------------------------
-    tokens = s.replace(",", "").split()
+    tokens = s.replace(",", "").lower().split()
+
+    # ----------------------------
+    # handle "in X days" pattern
+    # ----------------------------
+    if tokens[0] == "in":
+        value = int(tokens[1])
+        unit = tokens[2]
+
+        if unit.startswith("day"):
+            return ref + timedelta(days=value)
+        if unit.startswith("week"):
+            return ref + timedelta(weeks=value)
+        if unit.startswith("month"):
+            return ref + relativedelta(months=value)
+        if unit.startswith("year"):
+            return ref + relativedelta(years=value)
 
     days = weeks = months = years = 0
     direction = None  # "after" or "before"

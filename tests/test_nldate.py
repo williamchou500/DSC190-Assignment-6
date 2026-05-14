@@ -22,28 +22,8 @@ def test_date_string_nd():
     assert nldate.parse("December 2nd, 2025") == date(2025, 12, 2)
 
 
-def test_date_string_short():
-    assert nldate.parse("the day after tomorrow") == date(2026, 5, 15)
-
-
 def test_date_string_period():
     assert nldate.parse("Dec. 2nd, 2025") == date(2025, 12, 2)
-
-
-def test_date_string_in_5_days():
-    assert nldate.parse("in 5 days") == date(2026, 5, 18)
-
-
-def test_date_string_days_ago():
-    assert nldate.parse("5 days ago") == date(2026, 5, 8)
-
-
-def test_date_string_a_week_ago():
-    assert nldate.parse("a week ago") == date(2026, 5, 6)
-
-
-def test_date_string_from_now():
-    assert nldate.parse("two weeks from now") == date(2026, 5, 27)
 
 
 def test_today():

@@ -82,6 +82,12 @@ def parse(s: str, today: date | None = None) -> date:
     if "the day after tomorrow" in s:
         ref = today or date.today()
         return ref + timedelta(days=2)
+    if "day before yesterday" in s:
+        ref = today or date.today()
+        return ref - timedelta(days=2)
+    if "the day before yesterday" in s:
+        ref = today or date.today()
+        return ref - timedelta(days=2)
 
     base = embedded_date or ref
 
